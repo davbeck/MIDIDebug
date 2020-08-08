@@ -29,11 +29,25 @@ struct SendPacketView: View {
 					Text("\(channel)")
 				}
 			}.layoutPriority(1).fixedSize()
-			Picker(selection: $note, label: Text("Note").layoutPriority(1).fixedSize()) {
-				ForEach(UInt8(0)...127, id: \.self) { note in
-					Text("\(note)")
-				}
-			}.layoutPriority(1).fixedSize()
+			if status.usesNote {
+				Picker(selection: $note, label: Text("Note").layoutPriority(1).fixedSize()) {
+					ForEach(MIDINote.allCases) { note in
+						HStack {
+							Text(note.description)
+							Spacer()
+							Text("(\(note.rawValue))")
+						}
+						.font(Font.footnote.monospacedDigit())
+						.tag(note.rawValue)
+					}
+				}.layoutPriority(1).fixedSize()
+			} else {
+				Picker(selection: $note, label: Text("Note").layoutPriority(1).fixedSize()) {
+					ForEach(UInt8(0)...127, id: \.self) { note in
+						Text("\(note)")
+					}
+				}.layoutPriority(1).fixedSize()
+			}
 			Picker(selection: $intensity, label: Text("Intensity").layoutPriority(1).fixedSize()) {
 				ForEach(UInt8(0)...127, id: \.self) { intensity in
 					Text("\(intensity)")
@@ -52,8 +66,8 @@ struct SendPacketView: View {
 }
 
 struct SendPacketView_Previews: PreviewProvider {
-    static var previews: some View {
-        SendPacketView()
+	static var previews: some View {
+		SendPacketView()
 			.environmentObject(MIDIController.shared)
-    }
+	}
 }
